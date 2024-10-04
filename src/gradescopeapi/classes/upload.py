@@ -1,11 +1,13 @@
 """Functions for uploading assignments to Gradescope."""
 
+import io
+import mimetypes
+import pathlib
+from typing import Optional
+
 import requests
 from bs4 import BeautifulSoup
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-import mimetypes
-import io
-import pathlib
 
 
 def upload_assignment(
@@ -14,6 +16,7 @@ def upload_assignment(
     assignment_id: str,
     *files: io.TextIOWrapper,
     leaderboard_name: str | None = None,
+    owner_id: Optional[str] = None,
 ) -> str | None:
     """Uploads given file objects to the specified assignment on Gradescope.
 
@@ -56,6 +59,7 @@ def upload_assignment(
         ("authenticity_token", auth_token),
         ("submission[method]", "upload"),
         *form_files,
+        ("submission[owner_id]", owner_id),
     ]
     if leaderboard_name is not None:
         fields.append(("submission[leaderboard_name]", leaderboard_name))
